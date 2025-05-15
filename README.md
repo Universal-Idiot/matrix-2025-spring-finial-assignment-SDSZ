@@ -1,4 +1,48 @@
-# matrix-2025-spring-finial-assignment-SDSZ
-This is a small project on matrix and its operation,  creating for finishing the homework or it should called the finial assignment of the linear algebra class, spring 2025, SDSZ high school. It could be a small project while using Python, but I prefer using this assignment to review the concept of C++ and learning something i want to learn but never had a chance before, like dynamic allocation of memories, “class” in C++, link multi files, setting up VS code, and start to use Github. This project is about to develop an encapsulated class of matrix and vector with some interface to use.  I know there is plenty of well-developed and convenient lib of such things, and doing matrix calculations  is more easier on some software like Matlab, but I am learning linear algebra, and doing this project is a chance to help me review the concept (I know it cannot help me understanding, which only can done by doing the proofing by myself, but it can make me more familiar to those concept, is still gonna help some effect). OK, that’s it. Further descriptions will be the manual of this project, written below this block.
-Author: 11767
-Date: 15:36(UTC+8) 2025.5.9 
+# *线性代数课期末作业 说明书*<bar> {ignore}
+**by 11767** [点击跳转至Github](https://github.com/Universal-Idiot/matrix-2025-spring-finial-assignment-SDSZ)
+___
+[toc]
+___
+# 内容{#custom-id}
+- 内容是用 C++ 实现数学课期末作业，使用面向对象的编程方式，在AI的现学现教的帮助下，将矩阵和向量的运算封装成一个类，所有类和函数的声明放在了```matrix.hpp```中，实现方法放在```matrix.cpp```中，每道题目直接引用封装好的函数就可以了.<bar>
+~~*ps: 虽然有AI帮忙，但也算做了这么多，你俩要不请我杯奶茶？*~~
+
+- 作业一共四道题目：<bar>
+>  1. 编写一段代码，实现 *Gram-Schmidt* 算法. 即首先判断一组输入向量
+$\left\{a_{1}, a_{2}, · · · , a_{n} \right\}$ 是否线性无关，若线性相关，输出该向量组线性相关的结论；若线性无关，输出单位正交的向量组 $\left\{q_{1}, q_{2}, · · · , q_{n} \right\}$.
+> 2. 编写一段代码，配平以下两个化学方程式.<bar>
+$\ce{KMnO4 + HCl -> KCl + MnCl2 + H2O + Cl2} $<bar>
+$\ce{ K4Fe(CN)6 + KMnO4 + H2SO4 -> KHSO4 + Fe2(SO4)3}$<bar>
+$\ce{ + MnSO4 + HNO3 + CO2 + H2O} $
+> 3. 编写一段代码，通过 *Gaussian elimination* 实现输入矩阵的 *reduced row echelon form*.
+> 4. 编写一段代码，通过最小二乘法实现线性回归.
+>> (a) 给定一组数据 (附件 *data.txt*), 第*1*列为若干城市对应的人口数，第*2*列为在相应城市中开设的便利店的利润，负的利润值表示亏损.
+>> (b) 基于最小二乘准则，对该数据进行单变量线性回归，并基于回归得到的模型预测当人口数 $x=16$ 时的利润.
+___
+# 下载 & 运行
+- 为了正常地使用和编译，需下载头文件和源文件```matrix.hpp```和```matrix.cpp```，其他```.cpp```文件根据需求下载即可。然后在 IDE(集成开发环境) 里创建一个项目，将以上文件导入并编译和运行即可.
+
+- 如果您**没有 IDE**，那还需下载文件`makefile`来同时编译和关联多个文件生成可执行文件。确保您电脑上正确安装了 gcc 和 make, 将您下载的几个文件放在同一个文件夹里，然后打开`makefile`文件，找到一下这一行 (应该是第二行)：<bar>
+
+```makefile
+file_main = <filename>
+```
+- 将`<filename>`改为您想要编译的文件的名字 (不带后缀)， 并保存。最后打开命令行输入`make`即可.<bar>
+
+***代码使用了一些C++11及以上的特性，请确保您的编译器符合要求**
+___
+# 问题 & 后续计划 
+||问题|计划|近期是否打算改|
+|---|---|---|---|
+|1|程序未测试|N/A|N/A|
+|2|化学方程式配平后系数为小数|添加小数转分数来乘成整数|yes|
+|3|化学方程式输入太麻烦不直观|用qt库，添加GUI|no|
+|4|makefile太麻烦|改用cmake|no|
+|5||添加分数类|yes|
+|6||使用模板类简化代码|no|
+|7|Vector类添加元素时频繁复制删除复制|添加capaci|no|
+|8|屎山代码|破作业**how cares**|no|
+
+___
+# 类和函数列表
+*敬请期待，喵喵喵喵喵~*

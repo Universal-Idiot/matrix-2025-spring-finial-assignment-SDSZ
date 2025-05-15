@@ -164,7 +164,7 @@ class Matrix
         friend Matrix operator+ (const Matrix& left, const Matrix& right);
         friend Matrix operator- (const Matrix& left, const Matrix& right);
         friend Matrix operator* (const Number num, const Matrix& right);
-        friend Matrix operator* (const double num, const Matrix& right);
+        // friend Matrix operator* (const double num, const Matrix& right);
         friend Matrix operator* (const int num, const Matrix& right);
         friend Matrix operator* (const Matrix& left, const Matrix& right);
         friend Matrix operator* (const Matrix& left, const Vector& right);

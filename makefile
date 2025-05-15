@@ -1,5 +1,5 @@
 # files
-file_main = RREF
+file_main = <filename>
 file_implement = matrix
 file_head = matrix
 

@@ -1,4 +1,4 @@
-# *线性代数课期末作业 说明书*<bar> {ignore}
+# *线性代数课期末作业 说明书* 
 **by 11767** [点击跳转至Github](https://github.com/Universal-Idiot/matrix-2025-spring-finial-assignment-SDSZ)
 ___
 # 内容

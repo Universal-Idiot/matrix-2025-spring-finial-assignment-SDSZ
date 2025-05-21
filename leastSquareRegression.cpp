@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	// 3. construct the path of file
 
 	// open file
-	std::fstream inputFile("/Users/qili/Desktop/Learning coding/learning C++/data.txt", std::ios::in);
+	std::fstream inputFile("/Users/qili/Desktop/Learning coding/codeOfLinearAlgebraAssignment/data.txt", std::ios::in);
 ;	if(!inputFile)
 	{
 		std::cerr << "\nError: unable to open file\n";

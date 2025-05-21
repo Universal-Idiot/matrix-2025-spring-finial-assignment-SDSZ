@@ -5,7 +5,7 @@ file_head = matrix
 
 # compiler
 compiler = clang++
-standard = -std=c++17 -Wall
+standard = -std=c++17 -Wall -g -fsanitize=address
 
 # target file
 output = program_matrix_$(file_main)

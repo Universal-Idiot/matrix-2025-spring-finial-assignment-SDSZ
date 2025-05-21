@@ -1,5 +1,5 @@
 # *线性代数课期末作业 说明书* 
-**by 11767** [点击跳转至Github](https://github.com/Universal-Idiot/matrix-2025-spring-finial-assignment-SDSZ)
+**by 11767** [点击跳转至Github](https://github.com/Universal-Idiot/matrix-2025-spring-finial-assignment-SDSZ) version: v1.3
 ___
 # 内容
 - 内容是用 C++ 实现数学课期末作业，使用面向对象的编程方式，在AI的现学现教的帮助下，将矩阵和向量的运算封装成一个类，所有类和函数的声明放在了```matrix.hpp```中，实现方法放在```matrix.cpp```中，每道题目直接引用封装好的函数就可以了. 
@@ -26,18 +26,30 @@ file_main = <filename>
 
 ***代码使用了一些C++11及以上的特性，请确保您的编译器符合要求**
 ___
-# 问题 & 后续计划 
+# 问题
 ||问题|计划|近期是否打算改|
 |---|---|---|---|
 |1|程序未测试|N/A|N/A|
-|2|化学方程式配平后系数为小数|添加小数转分数来乘成整数|yes|
-|3|化学方程式输入太麻烦不直观|用qt库，添加GUI|no|
-|4|makefile太麻烦|改用cmake|no|
-|5||添加分数类|yes|
-|6||使用模板类简化代码|no|
-|7|Vector类添加元素时频繁复制删除复制|添加capaci|no|
-|8|屎山代码|破作业**how cares**|no|
-
+|2|分数类型的重载太过混乱|使用模板类简化代码|no|
+|3|makefile太麻烦|改用cmake|no|
+|4|Vector类添加元素时频繁复制删除复制|添加capacity|no|
+|5|屎山代码|破作业**how cares**|no|
+___
+# 计划
+|后续计划|（画大饼）|
+|---|---|
+|1|继续添加更多功能，例如 LU分解、特征值分解、SVD分解|
+|2|学习使用Qt库，添加GUI|
+|3|学习模板类，优化代码|
+|4|除了完善这个库，还可以开发一些别的功能，比如简单的3D渲染或者解PDE|
 ___
 # 类和函数列表
 *敬请期待，喵喵喵喵喵~*
+___
+# 版本
+1. **v1.0**: 第一版, 包括： ```matrix.cpp```、```matrix.hpp```、```makefile```、```leastSquareRegression.cpp```、```RREF.cpp```、```balanceTheChemicalRecation.cpp```、```gram_schmidt.cpp```
+2. **v1.1**: 修复了一些BUG；添加了```README.md```文档
+3. **v1.2**: 修复一些BUG；添加了分数类型、分数类型的矩阵
+4. **v1.3**: 修复了一些分数类型的BUG并完善其功能；重点改进```balanceTheChemicalRecation.cpp```：添加从命令行以 LaTeX 格式输入输出并自动识别元素填充矩阵以方便使用
+___
+

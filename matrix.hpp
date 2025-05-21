@@ -10,7 +10,6 @@
 #include <unistd.h> // provide "readlink" function
 #include <libgen.h> // provide "dirname" function
 
-const double epsilon = 1e-13;
 #define Number double // reserved for chaing double to fraction
 
 // draw kitty cat, treasure of this project
@@ -18,9 +17,11 @@ static inline void PrintHappyCat()
 {
     std::cout<<'\n'<<" Λ___Λ\n| ^  ^|\n|  v  |\n|     |\n";
 }
-static inline void PrintSadCat()
+static inline void PrintSadCat(std::string ss_ss_ss)
 {
+    std::cout << "\nError: " << ss_ss_ss;
     std::cout<<'\n'<<" Λ___Λ\n| T  T|\n|  _  |\n|     |\n";
+    assert(false);
 }
 static inline void PrintCat()
 {
@@ -30,17 +31,23 @@ static inline void PrintCat()
 class Matrix;
 class solutionOfLinearEquation;
 class Vector;
+class fraction;
+
+const double epsilon = 1e-13;
+long long int GCD(long long int a, long long int b);
 
 class fraction // not start yet & well i believe i need to learn how to use template, since this class is different from other, aiming to replace double in this whole program
 {
     private:
-        long long int numerator; // denominator is always positive, possitive or negative sign of this fraction will storing in numerator
+        long long int numerator; // denominator is usually positive, possitive or negative sign of this fraction will storing in numerator
         long long int denominator; // denominator will never be 0 !!!
 
     public:
         // constructor
         fraction();
         fraction(long long int n, long long int d);
+        fraction(const fraction& right);
+        fraction(const long long int right);
 
         // destructor
         ~fraction();
@@ -51,7 +58,6 @@ class fraction // not start yet & well i believe i need to learn how to use temp
         void printInLatex(); // in form of \frac{a}{b}
         long long int getNumerator();
         long long int getDenominator();
-        long long int GCD(); // GCD of numerator and denominator
         void simplification();
         void intToFration(int a);
         void doubleToFration(double a);
@@ -59,23 +65,30 @@ class fraction // not start yet & well i believe i need to learn how to use temp
 
         // operator overloading
         fraction& operator=(const fraction& right);
+        fraction& operator=(const long long int& right);
 
         //friend
         friend fraction operator+ (const fraction& left, const fraction& right);
+        friend fraction operator+ (const fraction& left, const int& right);
         friend fraction operator- (const fraction& left, const fraction& right);
         friend fraction operator* (const fraction& left, const fraction& right);
         friend fraction operator* (const int& left, const fraction& right);
         friend fraction operator/ (const fraction& left, const fraction& right);
+        friend fraction operator/ (const int& left, const fraction& right);
         friend bool operator== (const fraction& left, const fraction& right);
         friend bool operator== (const fraction& left, const int& right);
         friend bool operator== (const fraction& left, const double& right);
         friend bool operator!= (const fraction& left, const fraction& right);
+        friend bool operator!= (const fraction& left, const int& right);
         friend bool operator> (const fraction& left, const fraction& right);
         friend bool operator< (const fraction& left, const fraction& right);
         friend bool operator>= (const fraction& left, const fraction& right);
         friend bool operator<= (const fraction& left, const fraction& right);
-        friend fraction operator+= (const fraction& left, const fraction& right);
+        friend fraction abs(fraction x);
+        friend int fToi(fraction x); //懒，目前只写了，化简之后分母为1的情况
 } ;
+
+const fraction epsilon_f(1,1e13);
 
 class Vector //up to now, this class only developed for matrix mulitplcation, have long way to go
 {
@@ -99,12 +112,14 @@ class Vector //up to now, this class only developed for matrix mulitplcation, ha
         Number norm(int a); // not complete
         void add(Number a);
         int getSize();
+        Number getdata(int i);
 
         // operator overloading
         Vector& operator=(const Vector& right);
 
         // friend
         friend class Matrix;
+        friend class Matrix_f;
         friend bool operator== (const Vector& left, const Vector& right);
         friend Vector operator* (Number num, const Vector& right);
         friend Number operator* (Vector left, Vector right);
@@ -176,6 +191,48 @@ class Matrix
         friend solutionOfLinearEquation SolveLinearEquation(const Matrix& A, const Vector& b); // using Gaussian Elimination, no LU decomposition
         friend Matrix projectionXYZ(int numOfDimension); // not start yet
         friend Matrix leastSquareMethod(const Matrix& X, const Vector& Y); // (n is the num of observations, while m is num of variables (= 1 + num of independent variables)) X is n*(m-1) matrix of observation value of independent variables(means you don't need to add the column of 1 for constant when inputing), and Y is n*1 Vector of observation value of response variables. (right now is focused on only one response variable and using a linear function for regression)
+} ;
+
+class Matrix_f
+{
+    private:
+        int rows, cols, rank;
+        fraction** data;
+        Vector PositionOfPivot;// 1 means this column have pivot, 0 means this column does not have pivot.
+    public:
+        // constructor
+        Matrix_f(int r, int c);
+        Matrix_f(int size); // create a n*n identity matrix
+        Matrix_f();
+        Matrix_f(const Matrix_f& other);
+        //destroyer
+        ~Matrix_f();
+        // input & output in io-stream
+        void impartInt(); // impart
+        void print();
+        void printInLatex(); // create a n*n identity matrix
+        void printALLinfo();
+        // member function
+        void writeElements(int r, int c, fraction a);
+        fraction getElements(int r, int c);
+        int getRows();
+        int getCols();
+        void REF();
+        void RREF();
+        void fill(int a);
+        void RowOperation_MultiplyScalar(int Num_r, fraction Num); //目前只支持分数
+        void RowOperation_ExchangeRow(int Num_r_1, int Num_r_2);
+        void RowOperation_AddOneRowToAnother(int Num_r_1, int Num_r_2, fraction Num); // Num_r_1 is the row you are operating, Num_r_2 is the another row you want to add to Num_r_1
+        void ColumnOperation_MultiplyScalar(int Num_c, long long int Num); //目前只支持整数
+        Vector RowOfMatrix(int Num_r) const;
+        void clearTheDenominator(int start_c, int end_c); // clear denominators in columns, by multiple an integer to each row of one column. perticularly used on the solution of linear equations, since i storing those by columns not by rows, and the first column is constant which cannot excecute scalar mutilplication
+        void deleteOneLastRow(); // 懒，所以，positionOfPivot根本就没拷贝
+        // operator overloading
+        Matrix_f& operator=(const Matrix_f& right);
+        // friend
+        friend Matrix_f CombineMatrix(const Matrix_f& left, const Matrix_f& right, char direction);// H: horizontal; V: vertical //with "left" matrix on the top, and "right" matrix at the bottom
+        friend Matrix_f SolveLinearEquationAndPrint(const Matrix_f& A, const Matrix_f& b);
+        friend Matrix_f operator* (const int num, const Matrix_f& right);
 } ;
 
 class solutionOfLinearEquation

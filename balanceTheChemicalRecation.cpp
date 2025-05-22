@@ -225,7 +225,7 @@ int main()
     // std::cout<<'\n';
 
     // 挨个处理每个物质识别元素，生成系数矩阵
-    Matrix_f wjqLovesHqy, temp_horizontal(1, num_t);// wjqLovesHqy is the coefficient matrix, and paranthesis is the matrix for mark the position of paranthesis, rows are one layer of paranathesis
+    Matrix_f www, temp_horizontal(1, num_t);// www is the coefficient matrix, and paranthesis is the matrix for mark the position of paranthesis, rows are one layer of paranathesis
     temp_horizontal.fill(0);
     for(int num_e = 0; num_e < r.getSize(); num_e++) 
     {
@@ -258,13 +258,13 @@ int main()
                     temp_num.clear();
                     // 判断是否是已知元素，是，处理；不是，添加一行再处理
                     if(int is = elements.isInString(temp_e))
-                        wjqLovesHqy.writeElements(is - 1, num_e, wjqLovesHqy.getElements(is - 1, num_e) + temp_int);
+                        www.writeElements(is - 1, num_e, www.getElements(is - 1, num_e) + temp_int);
                     else
                     { // 不是已知元素，添加一行
                         num_elements++;
                         elements.add(temp_e); // test std::cout << "       the "<<num_e + 1<<"个物质 第"<<i<<"位 add new elements: "<<temp_e<<'\n';
-                        wjqLovesHqy = CombineMatrix(wjqLovesHqy, temp_horizontal, 'V');
-                        wjqLovesHqy.writeElements(elements.getSize() -1, num_e, temp_int);
+                        www = CombineMatrix(www, temp_horizontal, 'V');
+                        www.writeElements(elements.getSize() -1, num_e, temp_int);
                     }
                     temp_e.clear();
                     if(i < temp.size() && temp[i] != '(' && temp[i] != ')' )
@@ -282,7 +282,7 @@ int main()
     // 构造好系数矩阵和零向量
     for(int j = num_r; j < num_t ; j++)
     {
-        wjqLovesHqy.ColumnOperation_MultiplyScalar(j, -1);
+        www.ColumnOperation_MultiplyScalar(j, -1);
     }
     Matrix_f z(num_elements, 1);
     z.fill(0);
@@ -300,26 +300,26 @@ int main()
     // }
 
     // //test
-    // wjqLovesHqy.printALLinfo();
+    // www.printALLinfo();
 
-    wjqLovesHqy = SolveLinearEquationAndPrint(wjqLovesHqy, z);
-    wjqLovesHqy.clearTheDenominator(1, -1);
+    www = SolveLinearEquationAndPrint(www, z);
+    www.clearTheDenominator(1, -1);
 
     // // test
-    // wjqLovesHqy.printALLinfo();
+    // www.printALLinfo();
 
     std:: cout << "\n\n\n";
-    if(wjqLovesHqy.getCols() < 2)
+    if(www.getCols() < 2)
         std::cout << "此化学方程式无解，请检查您的输入";
     else{
-        if(wjqLovesHqy.getCols() > 2)
+        if(www.getCols() > 2)
             std::cout << "此化学方程式式自由变量多于1, 此处只展示一种配平方法";
         for(int i = 0; i < num_t; i++)
         {
             if(i == num_r)
                 std::cout << " -> ";
-            if(wjqLovesHqy.getElements(i, 1) > 1)
-                wjqLovesHqy.getElements(i, 1).print();
+            if(www.getElements(i, 1) > 1)
+                www.getElements(i, 1).print();
             forOutPut.print(i);
             if(i != num_t - 1 && i != num_r - 1)
                 std::cout << " + ";

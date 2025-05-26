@@ -25,7 +25,7 @@ static inline void PrintSadCat(std::string ss_ss_ss)
 }
 static inline void PrintCat()
 {
-    std::cout<<'\n'<<" Λ___Λ\n| ^  ^|\n|  μ  |\n|     |\n";
+    std::cout<<'\n'<<" Λ___Λ\n| η  η|\n|  μ  |\n|     |\n";
 }
 
 class Matrix;
@@ -262,6 +262,6 @@ class solutionOfLinearEquation
         friend solutionOfLinearEquation SolveLinearEquation(const Matrix& A, const Vector& b); // not test yet// using Gaussian Elimination, no LU decomposition
 } ;
 
-Matrix leastSquareMethod(Vector& x, const Vector& y);
+Matrix leastSquareMethod(Vector& x, Vector& y);
 
 #endif

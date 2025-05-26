@@ -134,6 +134,6 @@ ___
 ## **v1.2** 
 - 修复一些BUG；添加了分数类型、分数类型的矩阵
 ## **v1.3**
-- 修复了一些分数类型的BUG并完善其功能；重点改进```balanceTheChemicalRecation.cpp```：添加从命令行以 LaTeX 格式输入输出并自动识别元素填充矩阵以方便使用；完善了README.md
+- 修复了一些分数类型的BUG并完善其功能；重点改进```balanceTheChemicalRecation.cpp```：添加从命令行以 LaTeX 格式输入输出并自动识别元素填充矩阵以方便使用；添加了最小二乘后计算确定系数来评估模型好坏；完善了README.md
 ___
 

@@ -1667,7 +1667,7 @@ solutionOfLinearEquation SolveLinearEquation(const Matrix& A, const Vector& b)
 // ____________________________________________________________________________________________________________________________________
 // other:
 
-Matrix leastSquareMethod(const Matrix& x, const Vector& y) // (m is the num of observations, while n is num of variables (= 1 + num of independent variables)) X is m*(n-1) matrix of observation value of independent variables(means you don't need to add the column of 1 for constant when inputing), and Y is m*1 Vector of observation value of response variables. (right now is focused on only one response variable and using a linear function for regression)
+Matrix leastSquareMethod(const Matrix& x, const Vector& y) // (m is the num of observations, while n is num of variables (= 1 + num of independent variables)) X is m*(n-1) matrix of observation value of independent variables(means you don't need to add the column of 1 for constant when inputing), and Y is m*1 Vector of observation value of response variables.
 {
     Matrix temp(x.rows, 1); // 
     temp.fill(1);
@@ -1676,11 +1676,61 @@ Matrix leastSquareMethod(const Matrix& x, const Vector& y) // (m is the num of o
     return ans;
 }
 
-Matrix leastSquareMethod(Vector& x, const Vector& y) // (m is the num of observations, while n=2 is num of variables (= 1 + num of independent variables)) X is m*(n-1) matrix of observation value of independent variables(means you don't need to add the column of 1 for constant when inputing), and Y is m*1 Vector of observation value of response variables. (right now is focused on only one response variable and using a linear function for regression)
+Matrix leastSquareMethod(Vector& x, Vector& y) // (m is the num of observations, while n=2 is num of variables (= 1 + num of independent variables)) X is m*(n-1) matrix of observation value of independent variables(means you don't need to add the column of 1 for constant when inputing), and Y is m*1 Vector of observation value of response variables. (right now is focused on only one response variable and using a linear function for regression)
 {
+    // prepare the matrix for solving
     Matrix temp(x.getSize(), 1);
     temp.fill(1);
     Matrix X = CombineMatrix(temp, x, 'H', 'F');
-    Matrix ans = Inverse(Transpose(X) * X) * (Transpose(X) * y);
+
+    // calculate the mean of y and the Variance of y
+	double s2_x = 0, x_bar = 0, s2_y = 0, y_bar = 0, s2_r = 0, R2;
+	int num = x.getSize();
+	for(int i = 0; i < num; i++)
+    {
+        y_bar += y.getdata(i);
+        x_bar += x.getdata(i);
+    }
+	y_bar /= num;
+    x_bar /= num;
+	for(int i = 0; i < num; i++)
+    {
+		s2_y += ((y.getdata(i) - y_bar) * (y.getdata(i) - y_bar)); // 一会儿计算确定系数时会约掉y的个数所以这里就不除了
+        s2_x += ((x.getdata(i) - x_bar) * (x.getdata(i) - x_bar)); // 一会儿计算确定系数时会约掉y的个数所以这里就不除了
+    }
+
+    // linear regression
+    Matrix ans = Inverse(Transpose(X) * X) * (Transpose(X) * y); // 这个一定是一个2x1的矩阵，第一行是一次函数的系数-k，第二行是y的轴截距-y
+    
+    // calculate the Variance of residual and the coefficient of determination R^2
+	for(int i = 0; i < num; i++)
+	{
+        double residual = y.getdata(i) - ans.getData(0, 0) * x.getdata(i) - ans.getData(1, 0);
+		s2_r += residual * residual; // 一会儿计算确定系数时会约掉y的个数所以这里就不除了
+	}
+    R2 = 1 - s2_r / s2_y;
+    // adding other things into ans
+    Vector temmp(1);
+    temmp.fill(x_bar);
+    ans = CombineMatrix(ans, temmp, 'V', 'B');
+    temmp.fill(y_bar);
+    ans = CombineMatrix(ans, temmp, 'V', 'B');
+    temmp.fill(s2_x / num);
+    ans = CombineMatrix(ans, temmp, 'V', 'B');
+    temmp.fill(s2_y / num); // ！ 假设此处输入的所有数据即使总体
+    ans = CombineMatrix(ans, temmp, 'V', 'B');
+    temmp.fill(s2_r / num);
+    ans = CombineMatrix(ans, temmp, 'V', 'B');
+    temmp.fill(R2);
+    ans = CombineMatrix(ans, temmp, 'V', 'B');
     return ans;
+    // 返回格式为：
+    // row0: k
+    // row1: b
+    // row2: x_bar
+    // row3: y_bar
+    // row4: s2_x
+    // row5: s2_y
+    // row6: s2_r
+    // row7: R2
 }

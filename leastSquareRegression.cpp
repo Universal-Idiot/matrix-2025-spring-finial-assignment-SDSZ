@@ -44,7 +44,31 @@ int main(int argc, char* argv[])
 		}
 	}
 	Matrix ans=leastSquareMethod(x, y);
-	std::cout<<"\n the best fit linear funtion is: y = "<<ans.getData(0,0)<<" * x + "<<ans.getData(1,0)<<'\n';
- 	inputFile.close();
+	if(ans.getData(1,0) >= 0)
+		std::cout<<"\nthe best fit linear funtion is:\n y = "<<ans.getData(0,0)<<" * x + "<<ans.getData(1,0)<<'\n';
+	else
+		std::cout<<"\nthe best fit linear funtion is:\n y = "<<ans.getData(0,0)<<" * x - "<< -1 * ans.getData(1,0)<<'\n';
+	std::cout<<"with a Coefficient of Determination(R^2): "<<ans.getData(7, 0);
+	std::cout<<"\nwhich means we can explain "<<std::fixed << std::setprecision(2) << 100 * ans.getData(7, 0)<<R"(% of data by this regression model)";
+	if(ans.getData(7, 0) > 0.9)
+	{
+		std::cout<<"\nIt is an excellent, wonderful, unexceptionable, admirable, Superlative, Transcendent, regression model, congratulation!";
+		PrintHappyCat();
+	}
+	else if(ans.getData(7, 0) > 0.7)
+	{
+		std::cout<<"\nIt is a good regression model, have a good time!";
+		PrintHappyCat();
+	}
+	else if(ans.getData(7, 0) > 0.5)
+	{
+		std::cout<<"\nThe regression model is just so so, but still useful!";
+		PrintCat();
+	}
+	else if(ans.getData(7, 0) > 0.5)
+		std::cout<<"\nIt is a bad regression model, and you'd better to change another model!\n"<<" Λ___Λ\n| T  T|\n|  _  |\n|     |\n";
+	else
+		std::cout<<"\nYour regression model is a shit of garbage, and you should fuck yourself!\n"<<" Λ___Λ\n| T  T|\n|  _  |\n|     |\n";
+	inputFile.close();
     return 0;
 }

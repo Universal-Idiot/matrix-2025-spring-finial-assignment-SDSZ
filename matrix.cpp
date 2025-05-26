@@ -18,6 +18,12 @@ long long int GCD(long long int a, long long int b)
 	return 1;
 }
 
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// fraction:
+
 fraction::fraction() //默认是分子为0分母为1的零
 {
     denominator = 1;
@@ -287,7 +293,7 @@ int fToi(fraction x)
 // ____________________________________________________________________________________________________________________________________
 // ____________________________________________________________________________________________________________________________________
 // ____________________________________________________________________________________________________________________________________
-// Vector: 
+// Vector:
 
 Vector::Vector(int d) : size(d)
 {
@@ -371,6 +377,50 @@ Vector& Vector::operator=(const Vector& right)
     }
     return *this;
 }
+
+bool operator== (const Vector& left, const Vector& right)
+{
+    if(left.size != right.size)
+        return false;
+    for(int i = 0; i < right.size; i++) 
+        if(right.data[i] != left.data[i])
+            return false;
+    return true;
+}
+
+Vector operator* (Number num, const Vector& right)
+{
+   Vector ans(right.size);
+    for(int i = 0; i < ans.size; i++) 
+        ans.data[i] = num * right.data[i];
+    return ans;
+}
+
+Number operator* (Vector left, Vector right)// dot product
+{
+    // check size of two matrix
+    if (!(left.size == right.size))
+    {
+        std::cout << "Error: vectors are not same size, cannot multiply.\n";
+        std::cout << "left vector {";
+        left.print();
+        std::cout << "} have size of " << left.size << '\n';
+        std::cout << "right vector {";
+        right.print();
+        std::cout << "} have size of " << right.size << '\n';
+        PrintSadCat("");
+        assert(false);
+    }
+    // multiplication
+    Number ans = 0;
+    for(int i = 0; i < left.size; i++)
+    {
+        ans += left.data[i] * right.data[i];
+    }
+    return ans;
+}
+// Pseudovector operator* (const Vector& left, const Vector& right) // exterior product
+// Matrix operator* (const Vector& left, const Vector& right) // outer product
 
 // ____________________________________________________________________________________________________________________________________
 // ____________________________________________________________________________________________________________________________________
@@ -721,56 +771,6 @@ Matrix& Matrix::operator=(const Matrix& right)
     return *this;
 }
 
-// ____________________________________________________________________________________________________________________________________
-// ____________________________________________________________________________________________________________________________________
-// ____________________________________________________________________________________________________________________________________
-// ____________________________________________________________________________________________________________________________________
-// Others:
-
-bool operator== (const Vector& left, const Vector& right)
-{
-    if(left.size != right.size)
-        return false;
-    for(int i = 0; i < right.size; i++) 
-        if(right.data[i] != left.data[i])
-            return false;
-    return true;
-}
-
-Vector operator* (Number num, const Vector& right)
-{
-   Vector ans(right.size);
-    for(int i = 0; i < ans.size; i++) 
-        ans.data[i] = num * right.data[i];
-    return ans;
-}
-
-Number operator* (Vector left, Vector right)// dot product
-{
-    // check size of two matrix
-    if (!(left.size == right.size))
-    {
-        std::cout << "Error: vectors are not same size, cannot multiply.\n";
-        std::cout << "left vector {";
-        left.print();
-        std::cout << "} have size of " << left.size << '\n';
-        std::cout << "right vector {";
-        right.print();
-        std::cout << "} have size of " << right.size << '\n';
-        PrintSadCat("");
-        assert(false);
-    }
-    // multiplication
-    Number ans = 0;
-    for(int i = 0; i < left.size; i++)
-    {
-        ans += left.data[i] * right.data[i];
-    }
-    return ans;
-}
-// Pseudovector operator* (const Vector& left, const Vector& right) // exterior product
-// Matrix operator* (const Vector& left, const Vector& right) // outer product
-
 bool operator== (const Matrix& left, const Matrix& right)
 {
     if(left.rows != right.rows || left.cols != right.cols)
@@ -998,6 +998,12 @@ Matrix CombineMatrix(const Matrix& left, const Vector& right, char direction, ch
     PrintSadCat("unknown error");
 	return 0;
 }
+
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// Matrix_f:
 
 Matrix_f:: Matrix_f(int r, int c) : rows(r), cols(c), rank(-1)
 {
@@ -1499,6 +1505,12 @@ Matrix_f operator* (const int num, const Matrix_f& right)
     return ans;
 }
 
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// solutionOfLinearEquation:
+
 solutionOfLinearEquation::solutionOfLinearEquation()
 {
     ifSolution = false;
@@ -1648,6 +1660,12 @@ solutionOfLinearEquation SolveLinearEquation(const Matrix& A, const Vector& b)
     }
     return x;
 }
+
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// ____________________________________________________________________________________________________________________________________
+// other:
 
 Matrix leastSquareMethod(const Matrix& x, const Vector& y) // (m is the num of observations, while n is num of variables (= 1 + num of independent variables)) X is m*(n-1) matrix of observation value of independent variables(means you don't need to add the column of 1 for constant when inputing), and Y is m*1 Vector of observation value of response variables. (right now is focused on only one response variable and using a linear function for regression)
 {

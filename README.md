@@ -73,7 +73,7 @@ Matrix(const Matrix& right); // 拷贝构造函数
 ```c++
 ~Matrix();
 ```
-### 成员函数 (public)
+### 成员函数 & 友元函数 (public)
 #### 输入输出:
 ```c++
 void impart(); // 从命令行输入，每个元素以空格隔开，什么时候回车并不重要，程序并不知道你要输入多大的矩阵，所以建议你先输入行数和列数，再用第一个构造函数定义变量，然后再用这个输入
@@ -90,6 +90,8 @@ Vector RowOfMatrix(int Num_r) const; // 获取第 r+1 行的一整行
 Vector ColumnOfMatrix(int Num_c) const; // 获取第 c+1 列的一整列
 void fill(double a); // 将整个矩阵的每个元素赋值为 a
 void ErrorToZero(); // 消除接近零的浮点数误差：如果矩阵中哪个元素与零的差小于epsilon(=1e-15)，就认为它是零，并赋值为零
+friend Matrix CombineMatrix(const Matrix& left, const Matrix& right, char direction); // 将两个矩阵拼成一个矩阵，最后那个direction有两个取值是有用的：'H'表示H两个矩阵水平拼接，left在左right在右；'V'表示两个矩阵垂直拼接，left在上right在下
+friend Matrix CombineMatrix(const Matrix& left, const Vector& right, char direction, char position); // 将一个矩阵和一个向量拼接成一个矩阵。direction取'H'是矩阵和向量水平拼接；取'V'是竖直拼接。position取'F'是向量在前/上；取'B'是向量在后/下
 ```
 #### 矩阵运算：
 ```c++
@@ -97,15 +99,28 @@ void RowOperation_MultiplyScalar(int Num_r, double Num); // 行操作之数乘�
 void RowOperation_ExchangeRow(int Num_r_1, int Num_r_2); // 行操作之交换两行
 void RowOperation_AddOneRowToAnother(int Num_r_1, int Num_r_2, double Num); // 行操作之，将第 Num_r_2+1 行的每个元素乘以 Num 加到 第Num_r_1+1 行的每个元素上
 void REF(); // 将矩阵通过行化简操作转换至行梯形矩阵(row echelon form)
-int Rank(); // 先调用.REF()
-double Det(); // determiant
-void RREF();
+void RREF(); // 先调用.REF()，然后继续化简之化简行梯形矩阵(reduced row echelon form)
+int Rank(); // 计算矩阵的秩，如果行化简过，直接输出成员变量rank的值，如果没有，现场算一下
+double Det(); // 计算此矩阵的行列式，只有方阵才能计算行列式，如果矩阵大于3则用行化简来计算
+friend Matrix Transpose(const Matrix& A); // 计算矩阵的转置，输出一个矩阵（不改变此矩阵）
+friend Matrix Inverse(const Matrix& A); // 计算矩阵的逆（暂时使用行化简，LU分解还没做呢）
 ```
-懒得写了
 ### 运算符重载：
-### 友元类/行数
+```c++
+Matrix& operator=(const Matrix& right); // 重载 赋值运算符，深拷贝
+friend bool operator== (const Matrix& left, const Matrix& right); // 重载 等于号
+friend Matrix operator+ (const Matrix& left, const Matrix& right); // 重载 加号
+friend Matrix operator- (const Matrix& left, const Matrix& right); // 重载 减号
+friend Matrix operator* (const double num, const Matrix& right); // 重载 乘号， 一个double的浮点数乘一个矩阵
+friend Matrix operator* (const int num, const Matrix& right); // 重载 乘号，一个int整数乘一个矩阵
+friend Matrix operator* (const Matrix& left, const Matrix& right); // 重载 乘号，一个矩阵乘一个矩阵
+friend Matrix operator* (const Matrix& left, const Vector& right); // 重载 乘号， 一个矩阵乘一个向量，结果理论上是向量，但是一列的矩阵不也一样嘛
+```
+### 其他 (此处只是列出，功能介绍在后面)
 ```c++
 friend class solutionOfLinearEquation;
+friend solutionOfLinearEquation SolveLinearEquation(const Matrix& A, const Vector& b);
+friend Matrix leastSquareMethod(const Matrix& X, const Vector& Y);
 ```
 ## **3. ```fraction```类**
 ## **4. ```Matrix_f```类**

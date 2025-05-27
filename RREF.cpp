@@ -3,12 +3,14 @@
 int main()
 {
 	int rows, cols;
+	while(1){
 	std::cout << "\n\nPlease enter number of rows & columns: \n";
     std::cin >> rows >> cols;
     std::cout << "Please enter the matirx: \n";
-	Matrix A(rows, cols);
-	A.impart();
+	Matrix_f A(rows, cols);
+	A.impartInt();
 	A.RREF();
-	A.printALLinfo();
+	A.printALLinfo(); //
+	}
 	return 0;
 }

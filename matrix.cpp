@@ -71,6 +71,16 @@ void fraction::print() // in form of a/b
 		std::cout << numerator << '/' << denominator;
 }
 
+void fraction::printInDouble(int digit = 2)
+{
+    if(numerator == 0)
+        std::cout << 0;
+    else if(denominator == 1)
+        std::cout << numerator;
+    else
+        std::cout << std::fixed << std::setprecision(digit) << double(numerator) / double(denominator);
+}
+
 void fraction::printInLatex() // in form of \frac{a}{b}
 {
     if(numerator == 0)
@@ -78,7 +88,12 @@ void fraction::printInLatex() // in form of \frac{a}{b}
     else if(denominator == 1)
         std::cout << numerator;
 	else
-    	std::cout << R"(\frac{)" << numerator << "}{" << denominator << '}';
+    {
+        if(numerator >= 0)
+            std::cout << R"(\frac{)" << numerator << "}{" << denominator << '}';
+        else
+            std::cout << R"(-\frac{)" << -1 * numerator << "}{" << denominator << '}';
+    }
 }
 
 long long int fraction::getNumerator()
@@ -105,11 +120,13 @@ void fraction::simplification()
 	}
 }
 
-fraction abs(fraction x)
+fraction abs(const fraction& x)
 {
-    if(x.denominator != 0 && x.numerator < 0)
-        return -1 * x;
-	else return x;
+    fraction ans = x;
+    ans.simplification();
+    if(ans.denominator != 0 && ans.numerator < 0)
+        return -1 * ans;
+	else return ans;
 }
 
 fraction& fraction::operator=(const fraction& right)
@@ -118,6 +135,7 @@ fraction& fraction::operator=(const fraction& right)
     {
         numerator = right.numerator;
         denominator = right.denominator;
+        simplification();
     }
     return *this;
 }
@@ -286,6 +304,7 @@ int fToi(fraction x)
     x.simplification();
     if(x.getDenominator() == 1)
         return x.getNumerator();
+    // to be done
     return 0;
 }
 
@@ -605,7 +624,11 @@ void Matrix::RowOperation_MultiplyScalar(int Num_r, Number Num)
     if (Num_r < 0 || Num_r >= rows)
         PrintSadCat("the number of rows is NOT applicable to excecute an expected row operation.");
     for(int i = 0; i < cols; i++)
+    {
         data[Num_r][i] = Num * data[Num_r][i];
+        if(abs(data[Num_r][i]) < epsilon)
+            data[Num_r][i] = 0;
+    }
 }
 
 void Matrix::RowOperation_ExchangeRow(int Num_r_1, int Num_r_2)
@@ -627,7 +650,11 @@ void Matrix::RowOperation_AddOneRowToAnother(int Num_r_1, int Num_r_2, Number Nu
     if (Num_r_1 == Num_r_2 || Num_r_1 < 0 || Num_r_1 >= rows || Num_r_2 < 0 || Num_r_2 >= rows) 
         PrintSadCat("the number of rows is NOT applicable to excecute an expected row operation.");
     for(int i = 0; i < cols; i++)
-        data[Num_r_1][i] += Num * data[Num_r_2][i];
+    {
+        data[Num_r_1][i] += (Num * data[Num_r_2][i]);
+        if(abs(data[Num_r_1][i]) < epsilon)
+            data[Num_r_1][i] = 0;
+    }
 }
 
 void Matrix::REF() // to ROW ECHELON FORM
@@ -697,7 +724,7 @@ Number Matrix::Det() // determiant
     {
         Number det = 0;
         Matrix temp(*this);
-        temp.REF();
+        temp.REF(); // 不可以用RREF
         det = temp.data[0][0];
         for(int i = 1; i < rows; i++)
             det *= temp.data[i][i];
@@ -710,7 +737,7 @@ Number Matrix::Det() // determiant
 	return 0;
 }
 
-void Matrix::RREF()
+void Matrix::RREF_fake()
 {
     Number temp;
     REF();
@@ -732,7 +759,55 @@ void Matrix::RREF()
     }
     ErrorToZero();
 }
-        
+
+void Matrix::RREF()
+{
+    PositionOfPivot.data = new Number[cols]; // 储存主元位置，data[i]的意思是第i列的主元在data[i]行
+    PositionOfPivot.size = cols; // 设置向量的长度
+    PositionOfPivot.fill(0); // 预先将所有位置填上零，这样如果没有主元将此元素将不被赋值，也就默认为零
+    rank = 0;
+    Number temp = 1; // storing the coefficient
+    int position = 0; // row of lastest pivot
+    // processing column by column
+    for(int j = 0; j < cols; j++)
+    {
+        // find a non-zero pivot, if no non-zero pivot in this column, move to the next column
+        for(int i = position; i < rows; i++)
+        {
+            if(data[i][j] != 0)
+            {
+                RowOperation_ExchangeRow(i, position);
+                rank++;
+                PositionOfPivot.data[j] = position + 1;
+                position++;
+                break;
+            }
+        }
+        // 如果这列没有主元，则不管下面的行了
+        if(PositionOfPivot.getdata(j) < 1)
+            continue;
+        // 将主元所在行的主元化为1
+        temp = 1 / data[position - 1][j];
+        RowOperation_MultiplyScalar(position - 1, temp);
+        // 消除此列主元下面的非零项
+        for(int i = position; i < rows; i++)
+        {
+            if(data[i][j] == 0)
+                continue;
+            temp = -1*(data[i][j] / data[position - 1][j]);
+            RowOperation_AddOneRowToAnother(i, position - 1, temp);
+        }
+        // 消除主此列元上面的非零项
+        for(int i = 0; i < position - 1; i++)
+        {
+            if(data[i][j] == 0)
+                continue;
+            temp = -1 * data[i][j];
+            RowOperation_AddOneRowToAnother(i , position - 1,temp);
+        }
+    }
+}
+
 Matrix& Matrix::operator=(const Matrix& right)
 {
     if(this != &right)
@@ -856,6 +931,7 @@ Matrix Transpose(const Matrix& A)
     return ans;
 }
 
+// 未适配 .RREF()
 Matrix Inverse(const Matrix& A) // relied on row reduction, for larger matrix, LU decomposition will be better, but not start yet
 {
     if(A.cols != A.rows)// if not square
@@ -882,7 +958,7 @@ Matrix Inverse(const Matrix& A) // relied on row reduction, for larger matrix, L
         PrintSadCat("Square A is singular..., it should gives you a pesudo-inverse or any other things here, but i haven't learn yet");
     Matrix I(A.cols);// creat a augmented matrix [A|I]
     I = CombineMatrix(A, I, 'H');
-    I.RREF();// elementary row operation
+    I.RREF_fake();// elementary row operation
     if(I.rank != I.rows)
         PrintSadCat("Square A is singular..., it should gives you a pesudo-inverse or any other things here, but i haven't learn yet");
     for(int i = I.rows - 1; i > 0; i--)
@@ -1013,7 +1089,11 @@ Matrix_f:: Matrix_f(int r, int c) : rows(r), cols(c), rank(-1)
     }
     data = new fraction*[rows];
     for(int i = 0; i < rows; i++)
+    {
         data[i] = new fraction[cols];
+        for(int j = 0; j < cols; j++)
+            data[i][j] = 0;
+    }
     PositionOfPivot.data = nullptr;
 }
 
@@ -1116,10 +1196,26 @@ void Matrix_f::printInLatex()
     std::cout << R"(\end{bmatrix})";
 }
 
+void Matrix_f::printInDouble(int digit = 2)
+{
+    for(int i = 0; i < rows; i++) 
+    {
+        for(int j = 0; j < cols; j++)
+        {
+            data[i][j].printInDouble(digit);
+            std::cout << ' ';
+        }
+        std::cout << '\n';
+    }
+    std::cout.unsetf(std::ios::fixed);
+}
+
 void Matrix_f::printALLinfo()
 {
     std::cout << "\n\nrows: " << rows << "\ncolumns: " << cols;
-    std::cout << "\nthe matrix is: \n";
+    std::cout << "\nthe matrix is:\n";
+    printInDouble(4);
+    std::cout<<"Or in Latex form:\n";
     printInLatex();
     std::cout << '\n' << "rank: ";
     if(rank == -1)
@@ -1142,6 +1238,16 @@ void Matrix_f::writeElements(int r, int c, fraction a)
 	else{//test
         std::cout<<"\n\nerror, r: "<<r <<", c: "<<c<<", a: ";
         a.print();
+		PrintSadCat("writeElements: r and c are out of size of matrix, please check again");
+    }
+}
+
+void Matrix_f::writeElements(int r, int c, int a) // 给矩阵的第r+1行第c+1列的元素赋予值a
+{
+    if(r >=0 && r < rows && c >= 0 && c < cols)
+		data[r][c] = a;
+	else{//test
+        std::cout<<"\n\nerror, r: "<<r <<", c: "<<c<<", a: "<<a;
 		PrintSadCat("writeElements: r and c are out of size of matrix, please check again");
     }
 }
@@ -1246,7 +1352,7 @@ void Matrix_f::REF() // to ROW ECHELON FORM
     }
 }
 
-void Matrix_f::RREF()
+void Matrix_f::RREF_fake()
 {
     fraction temp;
     REF();
@@ -1268,6 +1374,61 @@ void Matrix_f::RREF()
     }
 }
 
+void Matrix_f::RREF()
+{
+    PositionOfPivot.data = new Number[cols]; // 储存主元位置，data[i]的意思是第i列的主元在data[i]行
+    PositionOfPivot.size = cols; // 设置向量的长度
+    PositionOfPivot.fill(0); // 预先将所有位置填上零，这样如果没有主元将此元素将不被赋值，也就默认为零
+    rank = 0;
+    fraction temp = 1; // storing the coefficient
+    int position = 0; // row of lastest pivot
+    // processing column by column
+    for(int j = 0; j < cols; j++)
+    {
+        // find a non-zero pivot, if no non-zero pivot in this column, move to the next column
+        for(int i = position; i < rows; i++)
+        {
+            if(data[i][j] != 0)
+            {
+                RowOperation_ExchangeRow(i, position);
+                rank++;
+                PositionOfPivot.data[j] = position + 1;
+                position++;
+                break;
+            }
+        }
+        // 如果这列没有主元，则不管下面的行了
+        if(PositionOfPivot.getdata(j) < 1)
+            continue;
+        // 将主元所在行的主元化为1
+        temp = 1 / data[position - 1][j];
+        RowOperation_MultiplyScalar(position - 1, temp);
+        // 消除此列主元下面的非零项
+        for(int i = position; i < rows; i++)
+        {
+            if(data[i][j] == 0)
+                continue;
+            temp = -1*(data[i][j] / data[position - 1][j]);
+            RowOperation_AddOneRowToAnother(i, position - 1, temp);
+        }
+        // 消除主此列元上面的非零项
+        for(int i = 0; i < position - 1; i++)
+        {
+            if(data[i][j] == 0)
+                continue;
+            temp = -1 * data[i][j];
+            RowOperation_AddOneRowToAnother(i , position - 1,temp);
+        }
+    }
+}
+
+void Matrix_f::fill(fraction a) // 将矩阵里所有的元素赋值为 a
+{
+    for(int i = 0; i < rows; i++)
+        for(int j = 0; j < cols; j++)
+			data[i][j] = a;
+}
+
 void Matrix_f::fill(int a)
 {
     for(int i = 0; i < rows; i++)
@@ -1275,7 +1436,7 @@ void Matrix_f::fill(int a)
 			data[i][j] = a;
 }
 
-void Matrix_f::clearTheDenominator(int start_c, int end_c) // end_c = -1 means from start_c to the end of the matrix, clear denominators in columns, by multiple an integer to each row of one column. perticularly used on the solution of linear equations, since i storing those by columns not by rows, and the first column is constant which cannot excecute scalar mutilplication
+void Matrix_f::clearTheDenominatorByColumn(int start_c, int end_c) // end_c = -1 means from start_c to the end of the matrix, clear denominators in columns, by multiple an integer to each row of one column. perticularly used on the solution of linear equations, since i storing those by columns not by rows, and the first column is constant which cannot excecute scalar mutilplication
 {
 	if(start_c >= 0 && end_c < cols && start_c <= end_c) // end_c should be 1 less than numbor of cols
 	{
@@ -1435,7 +1596,7 @@ Matrix_f SolveLinearEquationAndPrint(const Matrix_f& A, const Matrix_f& b)
         PrintSadCat(" why don't you chect the size of two matrix at first?");
     Matrix_f ans, Augment = CombineMatrix(A, b, 'H');
     // Gaussian Elimination
-    Augment.RREF();
+    Augment.RREF_fake();
     // no solution
     for(int i = Augment.rows - 1; i >= 0; i--)
     {
@@ -1584,6 +1745,7 @@ const inline bool solutionOfLinearEquation::getIfUniqueSolution()
     return false;
 }
 
+// 未适配 .RREF()
 solutionOfLinearEquation SolveLinearEquation(const Matrix& A, const Vector& b)
 {
     if(A.rows != b.size)
@@ -1591,7 +1753,7 @@ solutionOfLinearEquation SolveLinearEquation(const Matrix& A, const Vector& b)
     solutionOfLinearEquation x;
     Matrix Augment = CombineMatrix(A, b, 'H', 'B');
     // Gaussian Elimination
-    Augment.RREF();
+    Augment.RREF_fake();
     // no solution
     for(int i = Augment.rows - 1; i >= 0; i--)
     {
